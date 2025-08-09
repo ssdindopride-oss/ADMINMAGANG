@@ -988,10 +988,7 @@ const App = () => {
             }
         };
 
-        const handleExport = () => {
-            alert("Fitur ekspor akan dikembangkan di masa depan.");
-        };
-
+        // Removed the unused handleExport function
         const resetForm = () => {
             setFormData({
                 namaPihak3: '', jenisKerjaSama: '', tanggalMulai: '', lamaKontrak: '', buktiKerjaSama: ''
