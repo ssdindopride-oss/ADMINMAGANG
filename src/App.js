@@ -172,7 +172,7 @@ const App = () => {
         const [username, setUsername] = useState('');
         const [password, setPassword] = useState('');
 
-        const handleLogin = async (e) => {
+        const handleLogin = (e) => {
             e.preventDefault();
             setLoginError('');
             if (username === 'admin' && password === 'admin123') {
@@ -184,6 +184,7 @@ const App = () => {
                     setLoading(false);
                     setUser({ uid: 'simulated_user_id', displayName: 'Admin Banjarejo' });
                     setUserId('simulated_user_id');
+                    setCurrentPage('dashboard');
                 }, 1000);
 
             } else {
@@ -1185,6 +1186,3 @@ const App = () => {
 };
 
 export default App;
-git add .
-git commit -m "Fixing Netlify deployment issue"
-git push origin main
