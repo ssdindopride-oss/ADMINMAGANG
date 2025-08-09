@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithCustomToken, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, collection, onSnapshot, addDoc, setDoc, deleteDoc, query, where, Timestamp } from 'firebase/firestore';
 
-// Global Constants
-// These variables are provided by the Canvas environment.
-// We will use default values if they are not found (when running locally).
+// Global Constants for Firebase configuration
+// These values are hardcoded for Netlify deployment, using your Firebase project details.
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyDZNczO4fuO3BVIQ1IZJnAAMu5zwWqOhpY",
   authDomain: "banjarejo-green-smart.firebaseapp.com",
@@ -15,10 +14,7 @@ const FIREBASE_CONFIG = {
   appId: "1:699423432436:web:ba2d9332380d1bb56b48a1",
 };
 
-// Check if Canvas-specific variables exist
-const isCanvasEnvironment = typeof __app_id !== 'undefined';
-const APP_ID = isCanvasEnvironment ? __app_id : FIREBASE_CONFIG.projectId;
-const AUTH_TOKEN = isCanvasEnvironment ? __initial_auth_token : '';
+const APP_ID = FIREBASE_CONFIG.projectId;
 
 // Initialize Firebase
 const app = initializeApp(FIREBASE_CONFIG);
@@ -44,14 +40,8 @@ const App = () => {
     useEffect(() => {
         const initFirebaseAndAuth = async () => {
             try {
-                if (AUTH_TOKEN) {
-                    await signInWithCustomToken(auth, AUTH_TOKEN);
-                } else {
-                    // For local development, we'll bypass the anonymous sign-in
-                    // to prevent the auth/admin-restricted-operation error.
-                    // The login page itself will handle a "simulated" login.
-                    console.log("Running in local mode, skipping anonymous auth attempt.");
-                }
+                // We will always sign in anonymously on Netlify
+                await signInAnonymously(auth);
             } catch (error) {
                 console.error("Firebase auth error:", error);
             } finally {
@@ -67,6 +57,7 @@ const App = () => {
                 setUser(null);
                 setUserId(null);
             }
+            setLoading(false);
         });
 
         initFirebaseAndAuth();
