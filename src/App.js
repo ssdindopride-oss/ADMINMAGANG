@@ -15,6 +15,7 @@ const FIREBASE_CONFIG = {
 };
 
 const APP_ID = FIREBASE_CONFIG.projectId;
+const AUTH_TOKEN = null; // We explicitly set this to null for Netlify
 
 // Initialize Firebase
 const app = initializeApp(FIREBASE_CONFIG);
@@ -41,7 +42,11 @@ const App = () => {
         const initFirebaseAndAuth = async () => {
             try {
                 // We will always sign in anonymously on Netlify
-                await signInAnonymously(auth);
+                if (AUTH_TOKEN) {
+                    // This block will never be executed on Netlify since AUTH_TOKEN is null
+                } else {
+                    await signInAnonymously(auth);
+                }
             } catch (error) {
                 console.error("Firebase auth error:", error);
             } finally {
@@ -701,7 +706,7 @@ const App = () => {
         };
 
         const filteredData = mutasiData.filter(item =>
-            item.namaBarang.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.namaPihak3.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item.jenisMutasi.toLowerCase().includes(searchQuery.toLowerCase())
         );
     
