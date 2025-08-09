@@ -269,7 +269,7 @@ const App = () => {
 
     const SideMenuItem = ({ icon, label, onClick }) => (
         <a
-            href="#"
+            href="/"
             onClick={onClick}
             className="flex items-center p-3 text-sm font-medium text-gray-600 rounded-md hover:bg-green-100 hover:text-green-800 transition-colors"
         >
@@ -314,6 +314,8 @@ const App = () => {
                 return <GaleriPage />;
             case 'log':
                 return <LogPage />;
+            case 'login': // Handle login page render
+                return <LoginPage />;
             default:
                 return null;
         }
@@ -706,7 +708,7 @@ const App = () => {
         };
 
         const filteredData = mutasiData.filter(item =>
-            item.namaPihak3.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.namaBarak.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item.jenisMutasi.toLowerCase().includes(searchQuery.toLowerCase())
         );
     
@@ -887,10 +889,6 @@ const App = () => {
                         <div className="flex flex-col">
                             <label className="text-sm font-medium text-gray-700">Penerima</label>
                             <input type="text" name="penerima" value={formData.penerima} onChange={handleChange} className="mt-1 p-2 border border-gray-300 rounded-md" required />
-                        </div>
-                        <div className="flex flex-col md:col-span-2">
-                            <label className="text-sm font-medium text-gray-700">Bukti Kegiatan (URL Foto)</label>
-                            <input type="text" name="buktiKegiatan" value={formData.buktiKegiatan} onChange={handleChange} className="mt-1 p-2 border border-gray-300 rounded-md" />
                         </div>
                         <div className="md:col-span-2 flex justify-end space-x-2 mt-4">
                             <button type="submit" className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700">{editingId ? 'Simpan Perubahan' : 'Tambah Laporan'}</button>
