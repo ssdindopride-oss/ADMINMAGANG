@@ -269,7 +269,7 @@ const App = () => {
 
     const SideMenuItem = ({ icon, label, onClick }) => (
         <a
-            href="/"
+            href="#"
             onClick={onClick}
             className="flex items-center p-3 text-sm font-medium text-gray-600 rounded-md hover:bg-green-100 hover:text-green-800 transition-colors"
         >
