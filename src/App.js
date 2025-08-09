@@ -26,7 +26,7 @@ const App = () => {
     // State to manage UI and data
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState('dashboard');
+    const [currentPage, setCurrentPage] = useState('login'); // Start with login page
     const [inventarisData, setInventarisData] = useState([]);
     const [mutasiData, setMutasiData] = useState([]);
     const [progresData, setProgresData] = useState([]);
@@ -53,6 +53,8 @@ const App = () => {
             if (currentUser) {
                 setUser(currentUser);
                 setUserId(currentUser.uid);
+                // When a user is authenticated, navigate to the dashboard
+                setCurrentPage('dashboard');
             } else {
                 setUser(null);
                 setUserId(null);
@@ -261,7 +263,7 @@ const App = () => {
 
     const SideMenuItem = ({ icon, label, onClick }) => (
         <a
-            href="/"
+            href="#"
             onClick={onClick}
             className="flex items-center p-3 text-sm font-medium text-gray-600 rounded-md hover:bg-green-100 hover:text-green-800 transition-colors"
         >
@@ -272,6 +274,7 @@ const App = () => {
         </a>
     );
 
+    // Rendered page based on currentPage state
     const renderPage = () => {
         switch (currentPage) {
             case 'dashboard':
@@ -988,7 +991,6 @@ const App = () => {
             }
         };
 
-        // Removed the unused handleExport function
         const resetForm = () => {
             setFormData({
                 namaPihak3: '', jenisKerjaSama: '', tanggalMulai: '', lamaKontrak: '', buktiKerjaSama: ''
@@ -1183,3 +1185,6 @@ const App = () => {
 };
 
 export default App;
+git add .
+git commit -m "Fixing Netlify deployment issue"
+git push origin main
