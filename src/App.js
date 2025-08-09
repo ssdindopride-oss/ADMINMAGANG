@@ -696,6 +696,309 @@ const App = () => {
             setEditingId(null);
         };
 
+        const filteredData = mutasiData.filter(item =>
+            item.namaBarang.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.jenisMutasi.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    
+        return (
+            <div className="space-y-6">
+                <h1 className="text-3xl font-bold text-green-800">Mutasi Barang</h1>
+                <div className="bg-white p-6 rounded-xl shadow-md">
+                    <h2 className="text-2xl font-semibold text-green-700 mb-4">{editingId ? 'Edit Mutasi' : 'Tambah Mutasi'}</h2>
+                    <form onSubmit={handleAddOrUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex flex-col">
+                            <label className="text-sm font-medium text-gray-700">Nama Barang</label>
+                            <select name="namaBarangId" value={formData.namaBarangId} onChange={handleChange} className="mt-1 p-2 border border-gray-300 rounded-md" required>
+                                <option value="">Pilih Barang</option>
+                                {inventarisData.map(item => (
+                                    <option key={item.id} value={item.id}>{item.namaBarang}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="text-sm font-medium text-gray-700">Jenis Mutasi</label>
+                            <select name="jenisMutasi" value={formData.jenisMutasi} onChange={handleChange} className="mt-1 p-2 border border-gray-300 rounded-md" required>
+                                <option value="">Pilih Jenis</option>
+                                <option value="Pemasukan">Pemasukan</option>
+                                <option value="Pengeluaran">Pengeluaran</option>
+                            </select>
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="text-sm font-medium text-gray-700">Harga Satuan</label>
+                            <input type="text" value={selectedItem ? formatCurrency(selectedItem.hargaSatuan) : ''} readOnly className="mt-1 p-2 bg-gray-100 border border-gray-300 rounded-md" />
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="text-sm font-medium text-gray-700">Jumlah Barang</label>
+                            <input type="number" name="jumlah" value={formData.jumlah} onChange={handleChange} className="mt-1 p-2 border border-gray-300 rounded-md" required />
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="text-sm font-medium text-gray-700">Total Anggaran</label>
+                            <input type="text" value={selectedItem ? formatCurrency(formData.jumlah * selectedItem.hargaSatuan) : 'Rp 0,00'} readOnly className="mt-1 p-2 bg-gray-100 border border-gray-300 rounded-md" />
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="text-sm font-medium text-gray-700">Bukti Foto (URL)</label>
+                            <input type="text" name="buktiFoto" value={formData.buktiFoto} onChange={handleChange} className="mt-1 p-2 border border-gray-300 rounded-md" />
+                        </div>
+                        <div className="md:col-span-2 flex justify-end space-x-2 mt-4">
+                            <button type="submit" className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700">{editingId ? 'Simpan Perubahan' : 'Tambah Mutasi'}</button>
+                            {editingId && <button type="button" onClick={resetForm} className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">Batal</button>}
+                        </div>
+                    </form>
+                </div>
+                <div className="bg-white p-6 rounded-xl shadow-md">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-semibold text-green-700">Rekap Mutasi</h2>
+                        <input
+                            type="text"
+                            placeholder="Cari..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        />
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-green-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Akun</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Mutasi</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Mutasi</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Anggaran</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Link Bukti</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {filteredData.map((item, index) => (
+                                    <tr key={item.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.namaAkun}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatDate(item.createdAt)}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.jenisMutasi}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.jumlah}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatCurrency(item.totalAnggaran)}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {item.buktiFoto && <a href={item.buktiFoto} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">Lihat</a>}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button onClick={() => handleEdit(item)} className="text-indigo-600 hover:text-indigo-900 mr-2">Edit</button>
+                                            <button onClick={() => handleDelete(item.id, item.namaBarang)} className="text-red-600 hover:text-red-900">Hapus</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const LaporanKegiatanPage = () => {
+        const [searchQuery, setSearchQuery] = useState('');
+        const [formData, setFormData] = useState({
+            namaKegiatan: '', tanggalKegiatan: '', jenisKegiatan: '', penerima: '', buktiKegiatan: ''
+        });
+        const [editingId, setEditingId] = useState(null);
+
+        const handleChange = (e) => {
+            const { name, value } = e.target;
+            setFormData(prev => ({ ...prev, [name]: value }));
+        };
+        
+        const handleAddOrUpdate = async (e) => {
+            e.preventDefault();
+            const newItem = {
+                ...formData,
+                createdAt: Timestamp.now(),
+            };
+            try {
+                if (editingId) {
+                    await setDoc(doc(db, 'artifacts', APP_ID, 'users', userId, 'kegiatan', editingId), newItem);
+                    addLog('edit', `Mengedit laporan kegiatan: ${newItem.namaKegiatan}`);
+                } else {
+                    await addDoc(collection(db, 'artifacts', APP_ID, 'users', userId, 'kegiatan'), newItem);
+                    addLog('add', `Menambahkan laporan kegiatan: ${newItem.namaKegiatan}`);
+                }
+                resetForm();
+            } catch (error) {
+                console.error("Error adding/updating activity report:", error);
+            }
+        };
+
+        const handleEdit = (item) => {
+            setFormData({ namaKegiatan: item.namaKegiatan, tanggalKegiatan: item.tanggalKegiatan, jenisKegiatan: item.jenisKegiatan, penerima: item.penerima, buktiKegiatan: item.buktiKegiatan });
+            setEditingId(item.id);
+        };
+    
+        const handleDelete = async (id, namaKegiatan) => {
+            if (window.confirm(`Apakah Anda yakin ingin menghapus laporan kegiatan "${namaKegiatan}"?`)) {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', APP_ID, 'users', userId, 'kegiatan', id));
+                    addLog('delete', `Menghapus laporan kegiatan: ${namaKegiatan}`);
+                } catch (error) {
+                    console.error("Error deleting activity report:", error);
+                }
+            }
+        };
+        
+        const resetForm = () => {
+            setFormData({
+                namaKegiatan: '', tanggalKegiatan: '', jenisKegiatan: '', penerima: '', buktiKegiatan: ''
+            });
+            setEditingId(null);
+        };
+
+        const filteredData = kegiatanData.filter(item =>
+            item.namaKegiatan.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.penerima.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    
+        return (
+            <div className="space-y-6">
+                <h1 className="text-3xl font-bold text-green-800">Laporan Kegiatan</h1>
+                <div className="bg-white p-6 rounded-xl shadow-md">
+                    <h2 className="text-2xl font-semibold text-green-700 mb-4">{editingId ? 'Edit Laporan' : 'Tambah Laporan'}</h2>
+                    <form onSubmit={handleAddOrUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex flex-col">
+                            <label className="text-sm font-medium text-gray-700">Nama Kegiatan</label>
+                            <input type="text" name="namaKegiatan" value={formData.namaKegiatan} onChange={handleChange} className="mt-1 p-2 border border-gray-300 rounded-md" required />
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="text-sm font-medium text-gray-700">Tanggal Kegiatan</label>
+                            <input type="date" name="tanggalKegiatan" value={formData.tanggalKegiatan} onChange={handleChange} className="mt-1 p-2 border border-gray-300 rounded-md" required />
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="text-sm font-medium text-gray-700">Jenis Kegiatan</label>
+                            <input type="text" name="jenisKegiatan" value={formData.jenisKegiatan} onChange={handleChange} className="mt-1 p-2 border border-gray-300 rounded-md" required />
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="text-sm font-medium text-gray-700">Penerima</label>
+                            <input type="text" name="penerima" value={formData.penerima} onChange={handleChange} className="mt-1 p-2 border border-gray-300 rounded-md" required />
+                        </div>
+                        <div className="flex flex-col md:col-span-2">
+                            <label className="text-sm font-medium text-gray-700">Bukti Kegiatan (URL Foto)</label>
+                            <input type="text" name="buktiKegiatan" value={formData.buktiKegiatan} onChange={handleChange} className="mt-1 p-2 border border-gray-300 rounded-md" />
+                        </div>
+                        <div className="md:col-span-2 flex justify-end space-x-2 mt-4">
+                            <button type="submit" className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700">{editingId ? 'Simpan Perubahan' : 'Tambah Laporan'}</button>
+                            {editingId && <button type="button" onClick={resetForm} className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">Batal</button>}
+                        </div>
+                    </form>
+                </div>
+                <div className="bg-white p-6 rounded-xl shadow-md">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-semibold text-green-700">Rekap Laporan</h2>
+                        <input
+                            type="text"
+                            placeholder="Cari..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        />
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-green-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Kegiatan</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Kegiatan</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Link Bukti</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {filteredData.map((item, index) => (
+                                    <tr key={item.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggalKegiatan}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.namaKegiatan}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.jenisKegiatan}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {item.buktiKegiatan && <a href={item.buktiKegiatan} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">Lihat</a>}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button onClick={() => handleEdit(item)} className="text-indigo-600 hover:text-indigo-900 mr-2">Edit</button>
+                                            <button onClick={() => handleDelete(item.id, item.namaKegiatan)} className="text-red-600 hover:text-red-900">Hapus</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const KerjaSamaPage = () => {
+        const [searchQuery, setSearchQuery] = useState('');
+        const [formData, setFormData] = useState({
+            namaPihak3: '', jenisKerjaSama: '', tanggalMulai: '', lamaKontrak: '', buktiKerjaSama: ''
+        });
+        const [editingId, setEditingId] = useState(null);
+
+        const handleChange = (e) => {
+            const { name, value } = e.target;
+            setFormData(prev => ({ ...prev, [name]: value }));
+        };
+        
+        const handleAddOrUpdate = async (e) => {
+            e.preventDefault();
+            const tanggalBerakhir = new Date(formData.tanggalMulai);
+            tanggalBerakhir.setMonth(tanggalBerakhir.getMonth() + parseInt(formData.lamaKontrak, 10));
+
+            const newItem = {
+                ...formData,
+                tanggalBerakhir: tanggalBerakhir.toISOString().split('T')[0],
+                createdAt: Timestamp.now(),
+            };
+            try {
+                if (editingId) {
+                    await setDoc(doc(db, 'artifacts', APP_ID, 'users', userId, 'kerjaSama', editingId), newItem);
+                    addLog('edit', `Mengedit kerja sama: ${newItem.namaPihak3}`);
+                } else {
+                    await addDoc(collection(db, 'artifacts', APP_ID, 'users', userId, 'kerjaSama'), newItem);
+                    addLog('add', `Menambahkan kerja sama: ${newItem.namaPihak3}`);
+                }
+                resetForm();
+            } catch (error) {
+                console.error("Error adding/updating collaboration:", error);
+            }
+        };
+
+        const handleEdit = (item) => {
+            setFormData({ namaPihak3: item.namaPihak3, jenisKerjaSama: item.jenisKerjaSama, tanggalMulai: item.tanggalMulai, lamaKontrak: item.lamaKontrak, buktiKerjaSama: item.buktiKerjaSama });
+            setEditingId(item.id);
+        };
+    
+        const handleDelete = async (id, namaPihak3) => {
+            if (window.confirm(`Apakah Anda yakin ingin menghapus kerja sama dengan "${namaPihak3}"?`)) {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', APP_ID, 'users', userId, 'kerjaSama', id));
+                    addLog('delete', `Menghapus kerja sama: ${namaPihak3}`);
+                } catch (error) {
+                    console.error("Error deleting collaboration:", error);
+                }
+            }
+        };
+
+        const handleExport = () => {
+            alert("Fitur ekspor akan dikembangkan di masa depan.");
+        };
+
+        const resetForm = () => {
+            setFormData({
+                namaPihak3: '', jenisKerjaSama: '', tanggalMulai: '', lamaKontrak: '', buktiKerjaSama: ''
+            });
+            setEditingId(null);
+        };
+
         const filteredData = kerjaSamaData.filter(item =>
             item.namaPihak3.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item.jenisKerjaSama.toLowerCase().includes(searchQuery.toLowerCase())
